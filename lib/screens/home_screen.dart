@@ -7,45 +7,58 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 2; // Start with the Home tab selected (center)
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 4, vsync: this);
-  }
+  // List of all the tabs/screens
+  static const List<Widget> _tabs = <Widget>[
+    FuelTab(),
+    CustomerTab(),
+    HomeTab(), // Home tab is now in the center
+    EmployeeTab(),
+    ProfileTab(), // New Profile tab added
+  ];
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+  // Update the selected index when tapped
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('FarmTrack'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.home), text: "Home"),
-            Tab(icon: Icon(Icons.local_gas_station), text: "Fuel"),
-            Tab(icon: Icon(Icons.person_outline), text: "Customer"),
-            Tab(icon: Icon(Icons.people_outline), text: "Employee"),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          HomeTab(),
-          FuelTab(),
-          CustomerTab(),
-          EmployeeTab(),
+      appBar: AppBar(),
+      body: _tabs[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_gas_station),
+            label: 'Fuel',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            label: 'Customer',
+          ),
+          BottomNavigationBarItem(
+            // Home tab placed at the center
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people_outline),
+            label: 'Employee',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
         ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: const Color(0xFF3b4a37),
+        onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }
@@ -105,6 +118,21 @@ class EmployeeTab extends StatelessWidget {
     return Center(
       child: Text(
         'Employee Screen',
+        style: TextStyle(fontSize: 24),
+      ),
+    );
+  }
+}
+
+// Profile Tab
+class ProfileTab extends StatelessWidget {
+  const ProfileTab({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        'Profile Screen',
         style: TextStyle(fontSize: 24),
       ),
     );
