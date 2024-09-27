@@ -1,3 +1,4 @@
+import 'package:farm_track/screens/internal/new_work_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -111,7 +112,10 @@ class _ExpenseOverviewScreenState extends State<ExpenseOverviewScreen> {
       // New Work Button (Floating Action Button)
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Handle new work action
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => NewWorkScreen()),
+          );
         },
         child: Icon(Icons.add),
         backgroundColor: const Color(0xFF3b4a37),
