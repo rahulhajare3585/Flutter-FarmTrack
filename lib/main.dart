@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
-import 'screens/Authentications/login_screen.dart';
+import 'package:flutter/material.dart';  // Add this import
+import 'package:farm_track/screens/Authentications/login_screen.dart';
+
 
 void main() {
   runApp(const MyApp());

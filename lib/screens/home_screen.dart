@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'subscreens/customer_details_screen.dart';
+import 'subscreens/driver_details_screen.dart';
+import 'subscreens/profile_screen.dart';
+import 'subscreens/fuel_screen.dart';
+import 'subscreens/expense_overview_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -48,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.people_outline),
-            label: 'Employee',
+            label: 'Driver/Operator',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
@@ -70,12 +74,7 @@ class HomeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Home Screen',
-        style: TextStyle(fontSize: 24),
-      ),
-    );
+    return ExpenseOverviewScreen();
   }
 }
 
@@ -85,12 +84,7 @@ class FuelTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Fuel Screen',
-        style: TextStyle(fontSize: 24),
-      ),
-    );
+    return FuelScreen();
   }
 }
 
@@ -110,12 +104,7 @@ class EmployeeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Employee Screen',
-        style: TextStyle(fontSize: 24),
-      ),
-    );
+    return DriverDetailsScreen();
   }
 }
 
@@ -125,11 +114,6 @@ class ProfileTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Profile Screen',
-        style: TextStyle(fontSize: 24),
-      ),
-    );
+    return ProfileScreen();
   }
 }

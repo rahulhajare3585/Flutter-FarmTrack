@@ -35,19 +35,21 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         email TEXT NOT NULL UNIQUE,
-        password TEXT NOT NULL
+        password TEXT NOT NULL,
+        contact TEXT NOT NULL
       )
       ''',
     );
   }
 
   // Function to register a new user in the database
-  Future<int> insertUser(String name, String email, String password) async {
+  Future<int> insertUser(String name, String email, String password,String contact) async {
     var dbClient = await db;
     var result = await dbClient.insert("User", {
       "name": name,
       "email": email,
       "password": password,
+      "contact":contact
     });
     return result;
   }
