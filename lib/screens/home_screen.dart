@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'subscreens/customer_details_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,7 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
       body: _tabs[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -100,12 +100,7 @@ class CustomerTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Customer Screen',
-        style: TextStyle(fontSize: 24),
-      ),
-    );
+    return CustomerDetailsScreen();
   }
 }
 
