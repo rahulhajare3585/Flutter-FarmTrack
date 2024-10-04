@@ -47,10 +47,12 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Centering Plates Form'),
+        backgroundColor: const Color(0xFF3b4a37),
+      ),
       body: SingleChildScrollView(
-        // Make the whole screen scrollable
         child: Center(
-          // Center the card
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Card(
@@ -168,6 +170,19 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                           }
                           return null;
                         },
+                        onTap: () async {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2101),
+                          );
+                          if (pickedDate != null) {
+                            _givenDateController.text =
+                                pickedDate.toString().split(' ')[0];
+                          }
+                        },
                       ),
                       const SizedBox(height: 16),
 
@@ -186,6 +201,19 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                             return 'Please enter the received date';
                           }
                           return null;
+                        },
+                        onTap: () async {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2101),
+                          );
+                          if (pickedDate != null) {
+                            _receivedDateController.text =
+                                pickedDate.toString().split(' ')[0];
+                          }
                         },
                       ),
                       const SizedBox(height: 16),
@@ -260,13 +288,13 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                                 context: context,
                                 builder: (context) => AlertDialog(
                                   title: const Text('Success'),
-                                  content: const Text(
-                                      'Centering plates details submitted successfully!'),
+                                  content:
+                                      const Text('Record saved successfully!'),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
                                         Navigator.of(context)
-                                            .pop(); // Close the dialog
+                                            .pop(); // Close dialog
                                       },
                                       child: const Text('OK'),
                                     ),
@@ -276,9 +304,8 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                const Color(0xFF3b4a37), // Button color
-                            foregroundColor: Colors.white, // Text color
+                            backgroundColor: const Color(0xFF3b4a37),
+                            foregroundColor: Colors.white,
                           ),
                           child: const Text('Submit'),
                         ),
@@ -305,6 +332,5 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
     _totalAmountController.dispose();
     _receivedAmountController.dispose();
     _pendingAmountController.dispose();
-    super.dispose();
   }
 }

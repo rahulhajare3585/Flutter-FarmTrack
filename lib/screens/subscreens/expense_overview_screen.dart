@@ -123,26 +123,32 @@ class _ExpenseOverviewScreenState extends State<ExpenseOverviewScreen> {
                   FloatingActionButton(
                     onPressed: () {
                       // Action for Plates
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CenteringPlatesScreen(),
+                        ),
+                      );
                     },
-                    child: Image.asset(
-                      'assets/plates_icon.png', // Replace with your plates icon
-                      height: 30,
-                      width: 30,
+                    child: Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Image.network(
+                        'https://cdn.dotpe.in/longtail/item_thumbnails/8455499/aUOE5eAj-800-800.webp',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                     backgroundColor: Colors.white,
                   ),
                   FloatingActionButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => CenteringPlatesScreen()),
-                      );
+                      //action for tractors
                     },
-                    child: Image.asset(
-                      'assets/tractor_icon.png', // Replace with your tractor icon
-                      height: 30,
-                      width: 30,
+                    child: Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Image.network(
+                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQq2qbwdwsey96izWH98VGfkjVxjY9wEsbX9g&usqp=CAU',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                     backgroundColor: Colors.white,
                   ),
@@ -150,10 +156,12 @@ class _ExpenseOverviewScreenState extends State<ExpenseOverviewScreen> {
                     onPressed: () {
                       // Action for JCB
                     },
-                    child: Image.asset(
-                      'assets/jcb_icon.png', // Replace with your JCB icon
-                      height: 30,
-                      width: 30,
+                    child: Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Image.network(
+                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTukWIp7-mwjclKp32OGxbHR01wwtdZMIrlyl11fpSFOqbTB4kyKPD-Zc_i&s=10',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                     backgroundColor: Colors.white,
                   ),

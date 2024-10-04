@@ -51,6 +51,7 @@ flutter_launcher_icons:
   image_path:
     - "assets/images/logo.png"
     - "assets/images/profile.png"
+    - "assets/images/plates.png"
   android_background_color: "#ffffff"  # Set the background color to white
   ios_background_color: "#ffffff"
 
