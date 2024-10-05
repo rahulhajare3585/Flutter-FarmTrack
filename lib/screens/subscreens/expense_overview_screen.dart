@@ -1,5 +1,7 @@
 import 'package:farm_track/screens/internal/centering_plates_form.dart';
+import 'package:farm_track/screens/internal/jcb_work_screen.dart';
 import 'package:farm_track/screens/internal/new_work_screen.dart';
+import 'package:farm_track/screens/internal/tractor_work_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -132,37 +134,39 @@ class _ExpenseOverviewScreenState extends State<ExpenseOverviewScreen> {
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(5),
-                      child: Image.network(
-                        'https://cdn.dotpe.in/longtail/item_thumbnails/8455499/aUOE5eAj-800-800.webp',
-                        fit: BoxFit.cover,
-                      ),
+                      child: Image.asset('assets/images/plates.png'),
                     ),
                     backgroundColor: Colors.white,
                   ),
                   FloatingActionButton(
                     onPressed: () {
                       //action for tractors
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TractorWorkScreen(),
+                        ),
+                      );
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(5),
-                      child: Image.network(
-                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQq2qbwdwsey96izWH98VGfkjVxjY9wEsbX9g&usqp=CAU',
-                        fit: BoxFit.cover,
-                      ),
+                      child: Image.asset('assets/images/tractor.png'),
                     ),
                     backgroundColor: Colors.white,
                   ),
                   FloatingActionButton(
                     onPressed: () {
                       // Action for JCB
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => JcbWorkScreen(),
+                        ),
+                      );
                     },
                     child: Padding(
-                      padding: const EdgeInsets.all(5),
-                      child: Image.network(
-                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTukWIp7-mwjclKp32OGxbHR01wwtdZMIrlyl11fpSFOqbTB4kyKPD-Zc_i&s=10',
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                        padding: const EdgeInsets.all(5),
+                        child: Image.asset('assets/images/jcb.png')),
                     backgroundColor: Colors.white,
                   ),
                 ],

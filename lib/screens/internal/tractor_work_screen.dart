@@ -10,7 +10,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // Remove the debug banner
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -18,124 +17,34 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const CenteringPlatesScreen(),
+      home: const TractorWorkScreen(),
     );
   }
 }
 
-class CenteringPlatesScreen extends StatefulWidget {
-  const CenteringPlatesScreen({Key? key}) : super(key: key);
+class TractorWorkScreen extends StatefulWidget {
+  const TractorWorkScreen({Key? key}) : super(key: key);
 
   @override
-  _CenteringPlatesScreenState createState() => _CenteringPlatesScreenState();
+  _TractorWorkScreenState createState() => _TractorWorkScreenState();
 }
 
-class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
+class _TractorWorkScreenState extends State<TractorWorkScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _customerNameController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _contactNoController = TextEditingController();
-  final TextEditingController _platesQuantityController =
-      TextEditingController();
-  final TextEditingController _givenDateController = TextEditingController();
-  final TextEditingController _receivedDateController = TextEditingController();
+  final TextEditingController _DateController = TextEditingController();
+  final TextEditingController _workTypeController = TextEditingController();
+  final TextEditingController _workQuantityController = TextEditingController();
   final TextEditingController _totalAmountController = TextEditingController();
-  final TextEditingController _receivedAmountController =
-      TextEditingController();
+  final TextEditingController _paidAmountController = TextEditingController();
   final TextEditingController _pendingAmountController =
       TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Place the buttons in the bottomNavigationBar
-      bottomNavigationBar: SizedBox(
-        height: 60, // Adjust the height as needed
-        child: Padding(
-          padding: EdgeInsets.only(left: 20, right: 20),
-          child: Row(
-            children: [
-              // Cancel Button
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Handle cancel button press here
-                    _formKey.currentState?.reset(); // Reset the form fields
-                    _customerNameController.clear();
-                    _addressController.clear();
-                    _contactNoController.clear();
-                    _platesQuantityController.clear();
-                    _givenDateController.clear();
-                    _receivedDateController.clear();
-                    _totalAmountController.clear();
-                    _receivedAmountController.clear();
-                    _pendingAmountController.clear();
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: const Color(0xFF3b4a37),
-                    side: const BorderSide(
-                      color: Color(0xFF3b4a37), // Border color
-                      width: 0.5, // Border width
-                    ),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero, // No rounded corners
-                    ),
-                  ),
-                  child: const Text('Cancel'),
-                ),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              // Submit Button
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Handle successful submission here
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Success'),
-                          content: const Text('Record saved successfully!'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                _formKey.currentState?.reset();
-                                _customerNameController.clear();
-                                _addressController.clear();
-                                _contactNoController.clear();
-                                _platesQuantityController.clear();
-                                _givenDateController.clear();
-                                _receivedDateController.clear();
-                                _totalAmountController.clear();
-                                _receivedAmountController.clear();
-                                _pendingAmountController.clear();
-                                Navigator.of(context).pop(); // Close dialog
-                              },
-                              child: const Text('OK'),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF3b4a37),
-                    foregroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero, // No rounded corners
-                    ),
-                  ),
-                  child: const Text('Submit'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
       body: Padding(
         padding: const EdgeInsets.only(top: 54, bottom: 20),
         child: SingleChildScrollView(
@@ -155,13 +64,14 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Centering Plates Details',
+                          'Tractor Work',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 16),
+
                         // Customer Name
                         TextFormField(
                           controller: _customerNameController,
@@ -180,6 +90,7 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                           },
                         ),
                         const SizedBox(height: 16),
+
                         // Address
                         TextFormField(
                           controller: _addressController,
@@ -198,6 +109,7 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                           },
                         ),
                         const SizedBox(height: 16),
+
                         // Contact No
                         TextFormField(
                           controller: _contactNoController,
@@ -217,9 +129,9 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                           },
                         ),
                         const SizedBox(height: 16),
-                        // Given Date
+                        //Date
                         TextFormField(
-                          controller: _givenDateController,
+                          controller: _DateController,
                           decoration: InputDecoration(
                             labelText: 'Given Date',
                             border: OutlineInputBorder(
@@ -242,45 +154,37 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                               lastDate: DateTime(2101),
                             );
                             if (pickedDate != null) {
-                              _givenDateController.text =
+                              _DateController.text =
                                   pickedDate.toString().split(' ')[0];
                             }
                           },
                         ),
                         const SizedBox(height: 16),
-                        // Received Date
+
+                        // Work Type
                         TextFormField(
-                          controller: _receivedDateController,
+                          controller: _workTypeController,
                           decoration: InputDecoration(
-                            labelText: 'Received Date',
+                            labelText: 'Work Type',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            prefixIcon: const Icon(Icons.calendar_today),
+                            prefixIcon: const Icon(Icons.work),
                           ),
                           validator: (value) {
-                            return null;
-                          },
-                          onTap: () async {
-                            FocusScope.of(context).requestFocus(FocusNode());
-                            DateTime? pickedDate = await showDatePicker(
-                              context: context,
-                              initialDate: DateTime.now(),
-                              firstDate: DateTime(2000),
-                              lastDate: DateTime(2101),
-                            );
-                            if (pickedDate != null) {
-                              _receivedDateController.text =
-                                  pickedDate.toString().split(' ')[0];
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter the work type';
                             }
+                            return null;
                           },
                         ),
                         const SizedBox(height: 16),
-                        // Plates Quantity
+
+                        // Work Quantity
                         TextFormField(
-                          controller: _platesQuantityController,
+                          controller: _workQuantityController,
                           decoration: InputDecoration(
-                            labelText: 'Plates Quantity',
+                            labelText: 'Work Quantity',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -289,12 +193,13 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter the quantity of plates';
+                              return 'Please enter the work quantity';
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: 16),
+
                         // Total Amount
                         TextFormField(
                           controller: _totalAmountController,
@@ -313,12 +218,13 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                             return null;
                           },
                         ),
+
                         const SizedBox(height: 16),
-                        // Received Amount
+                        // Paid Amount
                         TextFormField(
-                          controller: _receivedAmountController,
+                          controller: _paidAmountController,
                           decoration: InputDecoration(
-                            labelText: 'Received Amount',
+                            labelText: 'Paid Amount',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -330,6 +236,7 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                           },
                         ),
                         const SizedBox(height: 16),
+
                         // Pending Amount
                         TextFormField(
                           controller: _pendingAmountController,
@@ -345,8 +252,6 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
-                        // Remove the buttons from inside the card
                       ],
                     ),
                   ),
@@ -354,6 +259,81 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
               ),
             ),
           ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  // Reset the form and clear the controllers
+                  _formKey.currentState?.reset();
+                  _customerNameController.clear();
+                  _addressController.clear();
+                  _contactNoController.clear();
+                  _workTypeController.clear();
+                  _workQuantityController.clear();
+                  _totalAmountController.clear();
+                  _paidAmountController.clear();
+                  _pendingAmountController.clear();
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color(0xFF3b4a37),
+                  side: const BorderSide(
+                    color: Color(0xFF3b4a37), // Border color
+                    width: 0.5, // Border width
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12), // Rounded corners
+                  ),
+                ),
+                child: const Text('Cancel'),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    // Handle successful submission
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Success'),
+                        content: const Text('Record saved successfully!'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              _formKey.currentState?.reset();
+                              _customerNameController.clear();
+                              _addressController.clear();
+                              _contactNoController.clear();
+                              _workTypeController.clear();
+                              _workQuantityController.clear();
+                              _totalAmountController.clear();
+                              _paidAmountController.clear();
+                              _pendingAmountController.clear();
+                              Navigator.of(context).pop(); // Close dialog
+                            },
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF3b4a37),
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Submit'),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -364,11 +344,10 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
     _customerNameController.dispose();
     _addressController.dispose();
     _contactNoController.dispose();
-    _platesQuantityController.dispose();
-    _givenDateController.dispose();
-    _receivedDateController.dispose();
+    _workTypeController.dispose();
+    _workQuantityController.dispose();
     _totalAmountController.dispose();
-    _receivedAmountController.dispose();
+    _paidAmountController.dispose();
     _pendingAmountController.dispose();
     super.dispose();
   }
