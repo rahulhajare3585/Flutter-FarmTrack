@@ -43,13 +43,14 @@ class DatabaseHelper {
   }
 
   // Function to register a new user in the database
-  Future<int> insertUser(String name, String email, String password,String contact) async {
+  Future<int> insertUser(
+      String name, String email, String password, String contact) async {
     var dbClient = await db;
     var result = await dbClient.insert("User", {
       "name": name,
       "email": email,
       "password": password,
-      "contact":contact
+      "contact": contact
     });
     return result;
   }
@@ -73,5 +74,23 @@ class DatabaseHelper {
       [email, password],
     );
     return result.isNotEmpty;
+  }
+
+  // create table centring Plates
+  void _onplatesCreate(Database db, int newVersion) async {
+    await db.execute('''
+    CREATE TABLE CentringPlates(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      address TEXT NOT NULL,
+      contact TEXT NOT NULL,
+      givenDate TEXT NOT NULL,
+      receivedDate TEXT,
+      quantity INTEGER NOT NULL,
+      totalAmount REAL NOT NULL,
+      receivedAmount REAL,
+      pendingAmount REAL NOT
+    )
+    ''');
   }
 }

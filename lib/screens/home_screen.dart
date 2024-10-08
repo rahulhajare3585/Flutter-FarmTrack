@@ -1,8 +1,9 @@
+import 'package:farm_track/screens/Authentications/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'subscreens/customer_details_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'subscreens/customer_list_screen.dart';
 import 'subscreens/driver_details_screen.dart';
 import 'subscreens/profile_screen.dart';
-import 'subscreens/fuel_screen.dart';
 import 'subscreens/expense_overview_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,7 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
     CustomerTab(),
     HomeTab(), // Home tab is now in the center
     EmployeeTab(),
-    ProfileTab(), // New Profile tab added
+    ProfileTab(),
   ];
 
   // Update the selected index when tapped
@@ -29,6 +30,16 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  // Function to log out by clearing preferences and navigating to login screen
+  Future<void> _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Clear all stored preferences (logout)
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
   }
 
   @override
@@ -46,7 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Customer',
           ),
           BottomNavigationBarItem(
-            // Home tab placed at the center
             icon: Icon(Icons.home),
             label: 'Home',
           ),
@@ -60,7 +70,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: const Color(0xFF3b4a37),
+        selectedItemColor: const Color.fromARGB(255, 14, 44, 6),
+        selectedFontSize: 22,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
       ),
@@ -84,7 +95,7 @@ class FuelTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FuelScreen();
+    return ProfileScreen();
   }
 }
 
@@ -94,7 +105,7 @@ class CustomerTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomerDetailsScreen();
+    return CustomerListScreen();
   }
 }
 

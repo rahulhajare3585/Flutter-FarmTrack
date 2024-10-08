@@ -1,3 +1,4 @@
+import 'package:farm_track/screens/Authentications/login_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -40,95 +41,111 @@ class _ProfileScreenState extends State<ProfileScreen>
     super.dispose();
   }
 
+  void _logout() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Expanded(
-            child: Card(
-              elevation: 4, // Add some shadow to the card
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12), // Rounded corners
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0), // Padding inside the card
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Animated Profile Photo with Border
-                    AnimatedBuilder(
-                      animation: _animation,
-                      builder: (context, child) {
-                        return Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.green,
-                              width: 3 +
-                                  (_animation.value *
-                                      2), // Animate border width
-                            ),
-                          ),
-                          child: Opacity(
-                            opacity: _animation
-                                .value, // Fade effect based on animation value
-                            child: CircleAvatar(
-                              radius: 60,
-                              backgroundImage: AssetImage(
-                                  'assets/images/profile.jpg'), // Replace with your asset image path
-                              backgroundColor: Colors.grey[300],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    SizedBox(height: 16),
-
-                    // Name
-                    Text(
-                      'Kishor Hajare',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-
-                    // Username
-                    Text(
-                      'kishor.hajare@gmail.com',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                    SizedBox(height: 16),
-
-                    // Contact
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.phone,
-                          color: const Color(
-                              0xFF3b4a37), // Custom color for the icon
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          '+91 9767745631',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey[700],
+          child: Card(
+            elevation: 4, // Add some shadow to the card
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12), // Rounded corners
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0), // Padding inside the card
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Animated Profile Photo with Border
+                  AnimatedBuilder(
+                    animation: _animation,
+                    builder: (context, child) {
+                      return Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.green,
+                            width: 3 +
+                                (_animation.value * 2), // Animate border width
                           ),
                         ),
-                      ],
+                        child: Opacity(
+                          opacity: _animation
+                              .value, // Fade effect based on animation value
+                          child: CircleAvatar(
+                            radius: 60,
+                            backgroundImage: AssetImage(
+                                'assets/images/profile.jpg'), // Replace with your asset image path
+                            backgroundColor: Colors.grey[300],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  SizedBox(height: 16),
+
+                  // Name
+                  Text(
+                    'Kishor Hajare',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
-                ),
+                  ),
+                  SizedBox(height: 8),
+
+                  // Username
+                  Text(
+                    'kishor.hajare@gmail.com',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  SizedBox(height: 16),
+
+                  // Contact
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.phone,
+                        color: const Color(
+                            0xFF3b4a37), // Custom color for the icon
+                      ),
+                      SizedBox(width: 8),
+                      Text(
+                        '+91 9767745631',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+
+                  // Logout Button
+                  ElevatedButton(
+                    onPressed: _logout,
+                    child: const Text('Logout'),
+                    style: ElevatedButton.styleFrom(
+                      // Change the button color
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 12),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

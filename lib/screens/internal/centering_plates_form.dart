@@ -1,4 +1,6 @@
+import 'package:farm_track/screens/dialogs/customer_registration_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,7 +12,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // Remove the debug banner
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -32,9 +33,13 @@ class CenteringPlatesScreen extends StatefulWidget {
 
 class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _customerNameController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _contactNoController = TextEditingController();
+  final List<String> _customerNames = [
+    "John Doe",
+    "Jane Smith",
+    "Bob Johnson",
+    "Alice Williams"
+  ];
+
   final TextEditingController _platesQuantityController =
       TextEditingController();
   final TextEditingController _givenDateController = TextEditingController();
@@ -45,25 +50,22 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
   final TextEditingController _pendingAmountController =
       TextEditingController();
 
+  String? _selectedCustomer;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Place the buttons in the bottomNavigationBar
       bottomNavigationBar: SizedBox(
-        height: 60, // Adjust the height as needed
+        height: 60,
         child: Padding(
-          padding: EdgeInsets.only(left: 20, right: 20),
+          padding: const EdgeInsets.only(left: 20, right: 20),
           child: Row(
             children: [
-              // Cancel Button
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    // Handle cancel button press here
-                    _formKey.currentState?.reset(); // Reset the form fields
-                    _customerNameController.clear();
-                    _addressController.clear();
-                    _contactNoController.clear();
+                    _formKey.currentState?.reset();
+                    _selectedCustomer = null;
                     _platesQuantityController.clear();
                     _givenDateController.clear();
                     _receivedDateController.clear();
@@ -76,25 +78,21 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                     backgroundColor: Colors.white,
                     foregroundColor: const Color(0xFF3b4a37),
                     side: const BorderSide(
-                      color: Color(0xFF3b4a37), // Border color
-                      width: 0.5, // Border width
+                      color: Color(0xFF3b4a37),
+                      width: 0.5,
                     ),
                     shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero, // No rounded corners
+                      borderRadius: BorderRadius.zero,
                     ),
                   ),
                   child: const Text('Cancel'),
                 ),
               ),
-              SizedBox(
-                width: 20,
-              ),
-              // Submit Button
+              const SizedBox(width: 20),
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      // Handle successful submission here
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -104,16 +102,14 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                             TextButton(
                               onPressed: () {
                                 _formKey.currentState?.reset();
-                                _customerNameController.clear();
-                                _addressController.clear();
-                                _contactNoController.clear();
+                                _selectedCustomer = null;
                                 _platesQuantityController.clear();
                                 _givenDateController.clear();
                                 _receivedDateController.clear();
                                 _totalAmountController.clear();
                                 _receivedAmountController.clear();
                                 _pendingAmountController.clear();
-                                Navigator.of(context).pop(); // Close dialog
+                                Navigator.of(context).pop();
                               },
                               child: const Text('OK'),
                             ),
@@ -126,7 +122,7 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                     backgroundColor: const Color(0xFF3b4a37),
                     foregroundColor: Colors.white,
                     shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero, // No rounded corners
+                      borderRadius: BorderRadius.zero,
                     ),
                   ),
                   child: const Text('Submit'),
@@ -162,62 +158,70 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        // Customer Name
-                        TextFormField(
-                          controller: _customerNameController,
-                          decoration: InputDecoration(
-                            labelText: 'Customer Name',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
+                        // Customer Name Dropdown with Add button
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownSearch<String>(
+                                items: _customerNames,
+                                selectedItem: _selectedCustomer,
+                                dropdownDecoratorProps: DropDownDecoratorProps(
+                                  dropdownSearchDecoration: InputDecoration(
+                                    labelText: 'Customer Name',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    prefixIcon: const Icon(Icons.person),
+                                  ),
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedCustomer = value;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please select a customer';
+                                  }
+                                  return null;
+                                },
+                                popupProps: const PopupProps.menu(
+                                  showSearchBox: true,
+                                ),
+                              ),
                             ),
-                            prefixIcon: const Icon(Icons.person),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter the customer name';
-                            }
-                            return null;
-                          },
+                            const SizedBox(width: 10), // Spacing
+                            // Add button
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) =>
+                                      CustomerRegistrationDialog(
+                                    onRegister: (customerName, address,
+                                        contactNumber, aadharNumber) {
+                                      setState(() {
+                                        // Handle the registration logic here, e.g., add to the customer list
+                                        _customerNames.add(customerName);
+                                      });
+                                    },
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.add),
+                              label: const Text('Add'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF3b4a37),
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 16),
-                        // Address
-                        TextFormField(
-                          controller: _addressController,
-                          decoration: InputDecoration(
-                            labelText: 'Address',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            prefixIcon: const Icon(Icons.home),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter the address';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        // Contact No
-                        TextFormField(
-                          controller: _contactNoController,
-                          decoration: InputDecoration(
-                            labelText: 'Contact No',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            prefixIcon: const Icon(Icons.phone),
-                          ),
-                          keyboardType: TextInputType.phone,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter the contact number';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        // Given Date
+                        // Given Date field
                         TextFormField(
                           controller: _givenDateController,
                           decoration: InputDecoration(
@@ -243,12 +247,12 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                             );
                             if (pickedDate != null) {
                               _givenDateController.text =
-                                  pickedDate.toString().split(' ')[0];
+                                  "${pickedDate.toLocal()}".split(' ')[0];
                             }
                           },
                         ),
                         const SizedBox(height: 16),
-                        // Received Date
+                        // Received Date field
                         TextFormField(
                           controller: _receivedDateController,
                           decoration: InputDecoration(
@@ -259,6 +263,9 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                             prefixIcon: const Icon(Icons.calendar_today),
                           ),
                           validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter the received date';
+                            }
                             return null;
                           },
                           onTap: () async {
@@ -271,12 +278,12 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                             );
                             if (pickedDate != null) {
                               _receivedDateController.text =
-                                  pickedDate.toString().split(' ')[0];
+                                  "${pickedDate.toLocal()}".split(' ')[0];
                             }
                           },
                         ),
                         const SizedBox(height: 16),
-                        // Plates Quantity
+                        // Plates Quantity field
                         TextFormField(
                           controller: _platesQuantityController,
                           decoration: InputDecoration(
@@ -289,13 +296,13 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter the quantity of plates';
+                              return 'Please enter the plates quantity';
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: 16),
-                        // Total Amount
+                        // Total Amount field
                         TextFormField(
                           controller: _totalAmountController,
                           decoration: InputDecoration(
@@ -303,7 +310,7 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            prefixIcon: const Icon(Icons.attach_money),
+                            prefixIcon: const Icon(Icons.money),
                           ),
                           keyboardType: TextInputType.number,
                           validator: (value) {
@@ -314,7 +321,7 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                           },
                         ),
                         const SizedBox(height: 16),
-                        // Received Amount
+                        // Received Amount field
                         TextFormField(
                           controller: _receivedAmountController,
                           decoration: InputDecoration(
@@ -322,15 +329,18 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            prefixIcon: const Icon(Icons.attach_money),
+                            prefixIcon: const Icon(Icons.money_off),
                           ),
                           keyboardType: TextInputType.number,
                           validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter the received amount';
+                            }
                             return null;
                           },
                         ),
                         const SizedBox(height: 16),
-                        // Pending Amount
+                        // Pending Amount field
                         TextFormField(
                           controller: _pendingAmountController,
                           decoration: InputDecoration(
@@ -338,15 +348,16 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            prefixIcon: const Icon(Icons.attach_money),
+                            prefixIcon: const Icon(Icons.money_off),
                           ),
                           keyboardType: TextInputType.number,
                           validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter the pending amount';
+                            }
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
-                        // Remove the buttons from inside the card
                       ],
                     ),
                   ),
@@ -361,9 +372,6 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
 
   @override
   void dispose() {
-    _customerNameController.dispose();
-    _addressController.dispose();
-    _contactNoController.dispose();
     _platesQuantityController.dispose();
     _givenDateController.dispose();
     _receivedDateController.dispose();

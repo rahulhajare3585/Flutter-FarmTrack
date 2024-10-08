@@ -1,5 +1,7 @@
 import 'package:farm_track/screens/Authentications/registration_screen.dart';
+import 'package:farm_track/screens/subscreens/expense_overview_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../databese/database_helper.dart';
 import '../home_screen.dart';
 
@@ -31,12 +33,33 @@ class _LoginScreenState extends State<LoginScreen>
       parent: _animationController,
       curve: Curves.easeInOut,
     );
+
+    _checkLoginStatus(); // Check if the user is already logged in
   }
 
   @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? email = prefs.getString('email');
+    String? password = prefs.getString('password');
+
+    if (email != null && password != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+      );
+    }
+  }
+
+  Future<void> _saveLogin(String email, String password) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email', email);
+    await prefs.setString('password', password);
   }
 
   Future<bool> _login() async {
@@ -47,6 +70,7 @@ class _LoginScreenState extends State<LoginScreen>
       bool isValid = await _dbHelper.validateUser(email, password);
       if (isValid) {
         _showMessageBox("Login Successful", "You have successfully logged in.");
+        await _saveLogin(email, password); // Save email and password
         return true;
       } else {
         _showMessageBox("Login Failed", "Invalid Email or Password");
@@ -194,7 +218,7 @@ class _LoginScreenState extends State<LoginScreen>
                           onPressed: () async {
                             bool check = await _login();
                             if (check) {
-                              Navigator.push(
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => HomeScreen()),
