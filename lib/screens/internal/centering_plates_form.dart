@@ -1,44 +1,16 @@
+import 'package:farm_track/databese/database_helper.dart';
 import 'package:farm_track/screens/dialogs/customer_registration_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 221, 240, 218),
-        ),
-        useMaterial3: true,
-      ),
-      home: const CenteringPlatesScreen(),
-    );
-  }
-}
-
 class CenteringPlatesScreen extends StatefulWidget {
-  const CenteringPlatesScreen({Key? key}) : super(key: key);
-
   @override
   _CenteringPlatesScreenState createState() => _CenteringPlatesScreenState();
 }
 
 class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
   final _formKey = GlobalKey<FormState>();
-  final List<String> _customerNames = [
-    "John Doe",
-    "Jane Smith",
-    "Bob Johnson",
-    "Alice Williams"
-  ];
+  List<String> _customerNames = []; // Will be populated from the database
 
   final TextEditingController _platesQuantityController =
       TextEditingController();
@@ -47,18 +19,107 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
   final TextEditingController _totalAmountController = TextEditingController();
   final TextEditingController _receivedAmountController =
       TextEditingController();
+  final TextEditingController _rateController = TextEditingController();
   final TextEditingController _pendingAmountController =
       TextEditingController();
+  final TextEditingController _totalDaysController =
+      TextEditingController(); // New Controller for Total Days
 
   String? _selectedCustomer;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCustomers();
+    _setDefaultGivenDate(); // Set today's date by default for Given Date
+  }
+
+  Future<void> _loadCustomers() async {
+    var dbHelper = DatabaseHelper();
+    var customers = await dbHelper.getCustomers();
+    setState(() {
+      _customerNames =
+          customers.map((customer) => customer['name'] as String).toList();
+    });
+  }
+
+  // Set today's date by default for Given Date
+  void _setDefaultGivenDate() {
+    DateTime now = DateTime.now();
+    String formattedDate = "${now.day}-${now.month}-${now.year}";
+    setState(() {
+      _givenDateController.text = formattedDate;
+    });
+  }
+
+  // Calculate the total days between Given Date and Received Date
+  void _calculateTotalDays() {
+    if (_givenDateController.text.isNotEmpty &&
+        _receivedDateController.text.isNotEmpty) {
+      DateTime? givenDate = _parseDate(_givenDateController.text);
+      DateTime? receivedDate = _parseDate(_receivedDateController.text);
+
+      if (givenDate != null && receivedDate != null) {
+        int differenceInDays = receivedDate.difference(givenDate).inDays;
+        _totalDaysController.text = differenceInDays.toString();
+      }
+    }
+  }
+
+  // Calculate the total amount
+  void _calculateTotalAmount() {
+    if (_totalDaysController.text.isNotEmpty &&
+        _rateController.text.isNotEmpty &&
+        _platesQuantityController.text.isNotEmpty) {
+      // Parse input values
+      int totalDays = int.tryParse(_totalDaysController.text) ?? 0;
+      double ratePer100Plates = double.tryParse(_rateController.text) ?? 0;
+      int plateQuantity = int.tryParse(_platesQuantityController.text) ?? 0;
+
+      if (totalDays > 0 && ratePer100Plates > 0 && plateQuantity > 0) {
+        // Calculate number of 100-plate batches
+        double plateBatches = plateQuantity / 100;
+
+        // Calculate the total amount based on the number of days and batches
+        double totalAmount = (ratePer100Plates / 30) * totalDays * plateBatches;
+
+        // Update the total amount in the controller
+        setState(() {
+          _totalAmountController.text = totalAmount.toStringAsFixed(2);
+        });
+      }
+    }
+  }
+
+//calculate pending amount
+  void _calculatePendingAmount() {
+    double totalAmount = double.tryParse(_totalAmountController.text) ?? 0;
+    double receivedAmount =
+        double.tryParse(_receivedAmountController.text) ?? 0;
+    double pendingAmount = totalAmount - receivedAmount;
+    setState(() {
+      _pendingAmountController.text = pendingAmount.toStringAsFixed(2);
+    });
+  }
+
+  // Helper method to parse the date string
+  DateTime? _parseDate(String date) {
+    try {
+      List<String> parts = date.split('-');
+      return DateTime(
+          int.parse(parts[2]), int.parse(parts[1]), int.parse(parts[0]));
+    } catch (e) {
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: SizedBox(
-        height: 60,
+        height: 120,
         child: Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20),
+          padding: const EdgeInsets.all(20),
           child: Row(
             children: [
               Expanded(
@@ -72,6 +133,8 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                     _totalAmountController.clear();
                     _receivedAmountController.clear();
                     _pendingAmountController.clear();
+                    _totalDaysController.clear();
+                    _rateController.clear();
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
@@ -109,6 +172,8 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                                 _totalAmountController.clear();
                                 _receivedAmountController.clear();
                                 _pendingAmountController.clear();
+                                _totalDaysController.clear();
+                                _rateController.clear();
                                 Navigator.of(context).pop();
                               },
                               child: const Text('OK'),
@@ -190,19 +255,27 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 10), // Spacing
+                            const SizedBox(width: 10),
                             // Add button
                             ElevatedButton.icon(
                               onPressed: () {
+                                // Implement the logic to add a new customer
                                 showDialog(
                                   context: context,
                                   builder: (context) =>
                                       CustomerRegistrationDialog(
                                     onRegister: (customerName, address,
-                                        contactNumber, aadharNumber) {
+                                        contactNumber, aadharNumber) async {
+                                      var dbHelper = DatabaseHelper();
+                                      await dbHelper.insertCustomer(
+                                        customerName,
+                                        address,
+                                        contactNumber,
+                                        aadharNumber,
+                                      );
+                                      await _loadCustomers();
                                       setState(() {
-                                        // Handle the registration logic here, e.g., add to the customer list
-                                        _customerNames.add(customerName);
+                                        _selectedCustomer = customerName;
                                       });
                                     },
                                   ),
@@ -246,8 +319,12 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                               lastDate: DateTime(2101),
                             );
                             if (pickedDate != null) {
-                              _givenDateController.text =
-                                  "${pickedDate.toLocal()}".split(' ')[0];
+                              String formattedDate =
+                                  "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+                              setState(() {
+                                _givenDateController.text = formattedDate;
+                                _calculateTotalDays();
+                              });
                             }
                           },
                         ),
@@ -277,15 +354,33 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                               lastDate: DateTime(2101),
                             );
                             if (pickedDate != null) {
-                              _receivedDateController.text =
-                                  "${pickedDate.toLocal()}".split(' ')[0];
+                              String formattedDate =
+                                  "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+                              setState(() {
+                                _receivedDateController.text = formattedDate;
+                                _calculateTotalDays(); // Recalculate the total days
+                              });
                             }
                           },
+                        ),
+                        const SizedBox(height: 16),
+                        // Total Days field (calculated automatically)
+                        TextFormField(
+                          controller: _totalDaysController,
+                          decoration: InputDecoration(
+                            labelText: 'Total Days',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            prefixIcon: const Icon(Icons.date_range),
+                          ),
+                          readOnly: true, // This field is read-only
                         ),
                         const SizedBox(height: 16),
                         // Plates Quantity field
                         TextFormField(
                           controller: _platesQuantityController,
+                          keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'Plates Quantity',
                             border: OutlineInputBorder(
@@ -293,26 +388,48 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                             ),
                             prefixIcon: const Icon(Icons.format_list_numbered),
                           ),
-                          keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter the plates quantity';
+                              return 'Please enter the quantity of plates';
                             }
                             return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        // Rate Quantity field
+                        TextFormField(
+                          controller: _rateController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Rate',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            prefixIcon: const Icon(Icons.format_list_numbered),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter the Rate of 100 plates/month';
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            // Recalculate total amount when rate is changed
+                            _calculateTotalAmount();
                           },
                         ),
                         const SizedBox(height: 16),
                         // Total Amount field
                         TextFormField(
                           controller: _totalAmountController,
+                          keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'Total Amount',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            prefixIcon: const Icon(Icons.money),
+                            prefixIcon: const Icon(Icons.attach_money),
                           ),
-                          keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter the total amount';
@@ -324,25 +441,29 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                         // Received Amount field
                         TextFormField(
                           controller: _receivedAmountController,
+                          keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'Received Amount',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            prefixIcon: const Icon(Icons.money_off),
+                            prefixIcon: const Icon(Icons.attach_money),
                           ),
-                          keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter the received amount';
                             }
                             return null;
                           },
+                          onChanged: (value) {
+                            _calculatePendingAmount();
+                          },
                         ),
                         const SizedBox(height: 16),
-                        // Pending Amount field
+                        // Pending Amount field (calculated from total and received amount)
                         TextFormField(
                           controller: _pendingAmountController,
+                          keyboardType: TextInputType.number,
                           decoration: InputDecoration(
                             labelText: 'Pending Amount',
                             border: OutlineInputBorder(
@@ -350,14 +471,10 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
                             ),
                             prefixIcon: const Icon(Icons.money_off),
                           ),
-                          keyboardType: TextInputType.number,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter the pending amount';
-                            }
-                            return null;
-                          },
+                          readOnly: true, // Automatically calculated
                         ),
+                        const SizedBox(height: 16),
+                        // Calculate pending amount when total and received amounts are filled
                       ],
                     ),
                   ),
@@ -368,16 +485,5 @@ class _CenteringPlatesScreenState extends State<CenteringPlatesScreen> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _platesQuantityController.dispose();
-    _givenDateController.dispose();
-    _receivedDateController.dispose();
-    _totalAmountController.dispose();
-    _receivedAmountController.dispose();
-    _pendingAmountController.dispose();
-    super.dispose();
   }
 }

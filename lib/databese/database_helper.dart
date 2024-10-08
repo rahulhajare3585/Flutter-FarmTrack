@@ -18,19 +18,20 @@ class DatabaseHelper {
 
   DatabaseHelper.internal();
 
-  // Initialize the database
+  // Initialize the database with version 3 to include the CentringPlates table
   Future<Database> initDb() async {
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'users.db');
 
-    var db = await openDatabase(path, version: 1, onCreate: _onCreate);
+    var db = await openDatabase(path,
+        version: 3, onCreate: _onCreate, onUpgrade: _onUpgrade);
     return db;
   }
 
-  // Create table when the database is first created
-  void _onCreate(Database db, int newVersion) async {
-    await db.execute(
-      '''
+  // Create tables when the database is first created
+  void _onCreate(Database db, int version) async {
+    // Create User table
+    await db.execute('''
       CREATE TABLE User(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -38,8 +39,90 @@ class DatabaseHelper {
         password TEXT NOT NULL,
         contact TEXT NOT NULL
       )
-      ''',
+      ''');
+
+    // Create Customer table
+    await db.execute('''
+      CREATE TABLE Customer(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        address TEXT NOT NULL,
+        contact TEXT NOT NULL,
+        aadhar TEXT
+      )
+      ''');
+
+    // Create CentringPlates table with a foreign key reference to the Customer table
+    await db.execute('''
+      CREATE TABLE CentringPlates(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        customer_id INTEGER,
+        plates_quantity INTEGER,
+        rate REAL,
+        total_amount REAL,
+        received_amount REAL,
+        pending_amount REAL,
+        total_days INTEGER,
+        given_date TEXT,
+        received_date TEXT,
+        FOREIGN KEY (customer_id) REFERENCES Customer(id) ON DELETE CASCADE
+      )
+      ''');
+  }
+
+  // Function to validate user login
+  Future<bool> validateUser(String email, String password) async {
+    var dbClient = await db;
+    var result = await dbClient.rawQuery(
+      "SELECT * FROM User WHERE email = ? AND password = ?",
+      [email, password],
     );
+    return result.isNotEmpty;
+  }
+
+  // Function to check if a user already exists based on email
+  Future<bool> checkUserExists(String email) async {
+    var dbClient = await db;
+    var result = await dbClient.query(
+      "User",
+      where: "email = ?",
+      whereArgs: [email],
+    );
+    return result.isNotEmpty;
+  }
+
+  // Upgrade the database to add new tables if needed
+  void _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // Create Customer table if upgrading from version 1
+      await db.execute('''
+        CREATE TABLE Customer(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL,
+          address TEXT NOT NULL,
+          contact TEXT NOT NULL,
+          aadhar TEXT
+        )
+        ''');
+    }
+    if (oldVersion < 3) {
+      // Create CentringPlates table if upgrading from version 2
+      await db.execute('''
+        CREATE TABLE CentringPlates(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          customer_id INTEGER,
+          plates_quantity INTEGER,
+          rate REAL,
+          total_amount REAL,
+          received_amount REAL,
+          pending_amount REAL,
+          total_days INTEGER,
+          given_date TEXT,
+          received_date TEXT,
+          FOREIGN KEY (customer_id) REFERENCES Customer(id) ON DELETE CASCADE
+        )
+        ''');
+    }
   }
 
   // Function to register a new user in the database
@@ -55,42 +138,61 @@ class DatabaseHelper {
     return result;
   }
 
-  // Function to check if a user already exists based on email
-  Future<bool> checkUserExists(String email) async {
+  // Function to register a new customer in the database
+  Future<int> insertCustomer(
+      String name, String address, String contact, String? aadhar) async {
+    var dbClient = await db;
+    var result = await dbClient.insert("Customer", {
+      "name": name,
+      "address": address,
+      "contact": contact,
+      "aadhar": aadhar
+    });
+    return result;
+  }
+
+  // Function to insert centring plate details
+  Future<int> insertCentringPlateDetails({
+    required int customerId,
+    required int platesQuantity,
+    required double rate,
+    required double totalAmount,
+    required double receivedAmount,
+    required double pendingAmount,
+    required int totalDays,
+    required String givenDate,
+    required String receivedDate,
+  }) async {
+    var dbClient = await db;
+    var result = await dbClient.insert("CentringPlates", {
+      "customer_id": customerId,
+      "plates_quantity": platesQuantity,
+      "rate": rate,
+      "total_amount": totalAmount,
+      "received_amount": receivedAmount,
+      "pending_amount": pendingAmount,
+      "total_days": totalDays,
+      "given_date": givenDate,
+      "received_date": receivedDate,
+    });
+    return result;
+  }
+
+  // Function to check if a customer already exists based on contact
+  Future<bool> checkCustomerExists(String contact) async {
     var dbClient = await db;
     var result = await dbClient.query(
-      "User",
-      where: "email = ?",
-      whereArgs: [email],
+      "Customer",
+      where: "contact = ?",
+      whereArgs: [contact],
     );
     return result.isNotEmpty;
   }
 
-  // Function to validate user login
-  Future<bool> validateUser(String email, String password) async {
+  // Function to get all customer details
+  Future<List<Map<String, dynamic>>> getCustomers() async {
     var dbClient = await db;
-    var result = await dbClient.rawQuery(
-      "SELECT * FROM User WHERE email = ? AND password = ?",
-      [email, password],
-    );
-    return result.isNotEmpty;
-  }
-
-  // create table centring Plates
-  void _onplatesCreate(Database db, int newVersion) async {
-    await db.execute('''
-    CREATE TABLE CentringPlates(
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      address TEXT NOT NULL,
-      contact TEXT NOT NULL,
-      givenDate TEXT NOT NULL,
-      receivedDate TEXT,
-      quantity INTEGER NOT NULL,
-      totalAmount REAL NOT NULL,
-      receivedAmount REAL,
-      pendingAmount REAL NOT
-    )
-    ''');
+    var result = await dbClient.query("Customer");
+    return result;
   }
 }

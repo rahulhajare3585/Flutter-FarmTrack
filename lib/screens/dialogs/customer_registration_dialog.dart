@@ -1,3 +1,4 @@
+import 'package:farm_track/databese/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class CustomerRegistrationDialog extends StatelessWidget {
@@ -95,7 +96,7 @@ class CustomerRegistrationDialog extends StatelessWidget {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
             final customerName = _customerNameController.text;
             final address = _addressController.text;
             final contactNumber = _contactNumberController.text;
@@ -106,6 +107,11 @@ class CustomerRegistrationDialog extends StatelessWidget {
             if (customerName.isNotEmpty &&
                 address.isNotEmpty &&
                 contactNumber.isNotEmpty) {
+              // Save the customer to the database
+              DatabaseHelper dbHelper = DatabaseHelper();
+              await dbHelper.insertCustomer(
+                  customerName, address, contactNumber, aadharNumber);
+
               onRegister(customerName, address, contactNumber, aadharNumber);
               Navigator.pop(context); // Close the dialog
             } else {

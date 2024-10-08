@@ -1,4 +1,5 @@
 import 'package:farm_track/screens/Authentications/login_screen.dart';
+import 'package:farm_track/screens/subscreens/fuel_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'subscreens/customer_list_screen.dart';
@@ -71,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: const Color.fromARGB(255, 14, 44, 6),
-        selectedFontSize: 22,
+        selectedFontSize: 16,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
       ),
@@ -95,7 +96,7 @@ class FuelTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProfileScreen();
+    return FuelListScreen();
   }
 }
 

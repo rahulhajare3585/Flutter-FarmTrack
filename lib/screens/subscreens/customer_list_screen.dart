@@ -1,3 +1,4 @@
+import 'package:farm_track/databese/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class Customer {
@@ -10,6 +11,14 @@ class Customer {
     required this.contactNumber,
     required this.pendingAmount,
   });
+
+  factory Customer.fromMap(Map<String, dynamic> map) {
+    return Customer(
+      name: map['name'],
+      contactNumber: map['contact'],
+      pendingAmount: map['pendingAmount'] ?? 0.0,
+    );
+  }
 }
 
 class CustomerListScreen extends StatefulWidget {
@@ -27,21 +36,19 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
   @override
   void initState() {
     super.initState();
-    customers = [
-      Customer(
-          name: 'John Doe', contactNumber: '1234567890', pendingAmount: 150.0),
-      Customer(
-          name: 'Jane Smith',
-          contactNumber: '0987654321',
-          pendingAmount: 200.0),
-      Customer(
-          name: 'Alice Johnson',
-          contactNumber: '1122334455',
-          pendingAmount: 75.0),
-      Customer(
-          name: 'Bob Brown', contactNumber: '6677889900', pendingAmount: 300.0),
-    ];
-    filteredCustomers = List.from(customers);
+    _loadCustomers();
+  }
+
+  // Load customers from SQLite database
+  Future<void> _loadCustomers() async {
+    DatabaseHelper dbHelper = DatabaseHelper();
+    List<Map<String, dynamic>> customerMaps = await dbHelper.getCustomers();
+    List<Customer> loadedCustomers =
+        customerMaps.map((map) => Customer.fromMap(map)).toList();
+    setState(() {
+      customers = loadedCustomers;
+      filteredCustomers = List.from(loadedCustomers);
+    });
   }
 
   void searchCustomers(String query) {
@@ -80,18 +87,6 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                              Colors.black), // Set background color to black
-                          foregroundColor: MaterialStateProperty.all(
-                              Colors.white), // Set text color to white
-                        ),
-                        onPressed: () {
-                          searchCustomers(searchController.text);
-                        },
-                        child: const Text('Search'),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
