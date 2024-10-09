@@ -5,8 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'; // Add this import
 import 'package:farm_track/screens/Authentications/login_screen.dart';
 
-void main() {
+void main() async {
   if (kIsWeb) {
+    WidgetsFlutterBinding.ensureInitialized();
     Firebase.initializeApp(
         options: const FirebaseOptions(
             apiKey: "AIzaSyD98wxOX-D2WzZF7GMur_nbXAvx5LKkgRE",
@@ -17,7 +18,7 @@ void main() {
             appId: "1:320354338303:web:ef36fa6344f51effd113ca",
             measurementId: "G-ZWNHBTGX96"));
   } else {
-    Firebase.initializeApp();
+    await Firebase.initializeApp();
   }
   runApp(const MyApp());
 }
