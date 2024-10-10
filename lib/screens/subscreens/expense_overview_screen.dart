@@ -1,6 +1,5 @@
 import 'package:farm_track/screens/internal/centering_plates_form.dart';
 import 'package:farm_track/screens/internal/jcb_work_screen.dart';
-import 'package:farm_track/screens/internal/new_work_screen.dart';
 import 'package:farm_track/screens/internal/tractor_work_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';

@@ -1,7 +1,5 @@
-import 'package:farm_track/screens/Authentications/login_screen.dart';
 import 'package:farm_track/screens/subscreens/fuel_list_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'subscreens/customer_list_screen.dart';
 import 'subscreens/driver_details_screen.dart';
 import 'subscreens/profile_screen.dart';
@@ -31,16 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
-  }
-
-  // Function to log out by clearing preferences and navigating to login screen
-  Future<void> _logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear(); // Clear all stored preferences (logout)
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
   }
 
   @override

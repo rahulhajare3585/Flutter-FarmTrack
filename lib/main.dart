@@ -1,12 +1,10 @@
-import 'package:farm_track/screens/home_screen.dart';
-import 'package:farm_track/screens/subscreens/expense_overview_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart'; // Add this import
 import 'package:farm_track/screens/Authentications/login_screen.dart';
 
 void main() async {
-  if (kIsWeb) {
+  /*if (kIsWeb) {
     WidgetsFlutterBinding.ensureInitialized();
     Firebase.initializeApp(
         options: const FirebaseOptions(
@@ -19,7 +17,7 @@ void main() async {
             measurementId: "G-ZWNHBTGX96"));
   } else {
     await Firebase.initializeApp();
-  }
+  }*/
   runApp(const MyApp());
 }
 

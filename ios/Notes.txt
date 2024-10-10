@@ -1,0 +1,21 @@
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  final firestoreHelper = FirestoreHelper();
+
+  // Register a new user
+  var user = await firestoreHelper.registerUser("John Doe", "john@example.com", "password123", "1234567890");
+
+  // Validate user login
+  var loggedInUser = await firestoreHelper.validateUser("john@example.com", "password123");
+
+  // Check if user exists
+  bool userExists = await firestoreHelper.checkUserExists("john@example.com");
+
+  // Insert a customer
+  await firestoreHelper.insertCustomer("Jane Doe", "123 Main St", "0987654321", "1234-5678-9012");
+
+  // Get customers
+  var customers = await firestoreHelper.getCustomers();
+}

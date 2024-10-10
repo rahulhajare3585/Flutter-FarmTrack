@@ -1,3 +1,4 @@
+import 'package:farm_track/databese/firestore_helper.dart';
 import 'package:flutter/material.dart';
 import '../../databese/database_helper.dart'; // Import the database helper
 
@@ -19,6 +20,8 @@ class _RegistrationScreenState extends State<RegistrationScreen>
   final TextEditingController _contactNumberController =
       TextEditingController();
   final DatabaseHelper _dbHelper = DatabaseHelper();
+
+  //final FirestoreHelper firestoreHelper = FirestoreHelper();
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -41,6 +44,7 @@ class _RegistrationScreenState extends State<RegistrationScreen>
 
       // Check if user already exists
       bool userExists = await _dbHelper.checkUserExists(email);
+      //|| await firestoreHelper.checkUserExists(email);
       if (userExists) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("User with this email already exists")),
@@ -51,6 +55,8 @@ class _RegistrationScreenState extends State<RegistrationScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Registration Successful")),
         );
+        // Register a new user on firebase
+        // await firestoreHelper.registerUser(name, email, password, contact);
         // Navigate to login screen or another screen after registration
         Navigator.pop(context); // Go back to the login screen
       }

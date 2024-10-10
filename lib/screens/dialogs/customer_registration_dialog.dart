@@ -1,4 +1,6 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:farm_track/databese/database_helper.dart';
+import 'package:farm_track/databese/firestore_helper.dart';
 import 'package:flutter/material.dart';
 
 class CustomerRegistrationDialog extends StatelessWidget {
@@ -107,13 +109,25 @@ class CustomerRegistrationDialog extends StatelessWidget {
             if (customerName.isNotEmpty &&
                 address.isNotEmpty &&
                 contactNumber.isNotEmpty) {
-              // Save the customer to the database
-              DatabaseHelper dbHelper = DatabaseHelper();
-              await dbHelper.insertCustomer(
-                  customerName, address, contactNumber, aadharNumber);
+              // Check the internet connection status
+              var connectivityResult =
+                  await (Connectivity().checkConnectivity());
 
-              onRegister(customerName, address, contactNumber, aadharNumber);
-              Navigator.pop(context); // Close the dialog
+              // If the result is either mobile or wifi, it means the user has internet access
+
+              if (connectivityResult == ConnectivityResult.mobile ||
+                  connectivityResult == ConnectivityResult.wifi) {
+                FirestoreHelper firestoreHelper = FirestoreHelper();
+                // Internet is available, execute the Firestore insertion
+                await firestoreHelper.insertCustomer(
+                    customerName, address, contactNumber, aadharNumber);
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Customer Added online ...')),
+                );
+              } else {
+                // Save the customer to the database
+              } // Close the dialog
             } else {
               // Show a Snackbar for incomplete fields
               ScaffoldMessenger.of(context).showSnackBar(

@@ -180,12 +180,16 @@ class DatabaseHelper {
 
   // Function to check if a customer already exists based on contact
   Future<bool> checkCustomerExists(String contact) async {
-    var dbClient = await db;
-    var result = await dbClient.query(
+    final dbClient = await db;
+
+    final result = await dbClient.query(
       "Customer",
       where: "contact = ?",
       whereArgs: [contact],
+      limit: 1, // Optimization to stop searching after finding the first match
     );
+
+    // Return true if customer exists, false otherwise
     return result.isNotEmpty;
   }
 
@@ -193,6 +197,23 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getCustomers() async {
     var dbClient = await db;
     var result = await dbClient.query("Customer");
+    return result;
+  }
+
+  // Function to get all customer details along with plates quantity and pending amount
+  Future<List<Map<String, dynamic>>> getPlatesCustomers() async {
+    var dbClient = await db;
+
+    // SQL query to join the Customer and CentringPlates tables
+    var result = await dbClient.rawQuery('''
+    SELECT Customer.name, Customer.contact, 
+           IFNULL(SUM(CentringPlates.plates_quantity), 0) AS platesQuantity, 
+           IFNULL(SUM(CentringPlates.pending_amount), 0) AS pendingAmount
+    FROM Customer
+    LEFT JOIN CentringPlates ON Customer.id = CentringPlates.customer_id
+    GROUP BY Customer.id
+  ''');
+
     return result;
   }
 }

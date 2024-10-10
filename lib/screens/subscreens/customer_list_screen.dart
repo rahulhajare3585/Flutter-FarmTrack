@@ -1,15 +1,18 @@
 import 'package:farm_track/databese/database_helper.dart';
 import 'package:flutter/material.dart';
 
+// Customer model with platesQuantity and pendingAmount
 class Customer {
   final String name;
   final String contactNumber;
   final double pendingAmount;
+  final int platesQuantity;
 
   Customer({
     required this.name,
     required this.contactNumber,
     required this.pendingAmount,
+    required this.platesQuantity,
   });
 
   factory Customer.fromMap(Map<String, dynamic> map) {
@@ -17,6 +20,7 @@ class Customer {
       name: map['name'],
       contactNumber: map['contact'],
       pendingAmount: map['pendingAmount'] ?? 0.0,
+      platesQuantity: map['platesQuantity'] ?? 0, // Default to 0 if null
     );
   }
 }
@@ -51,6 +55,7 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
     });
   }
 
+  // Search functionality for customers
   void searchCustomers(String query) {
     setState(() {
       filteredCustomers = customers.where((customer) {
@@ -63,15 +68,19 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Customer List'),
+      ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.only(top: 54.0), // Top padding
+          padding: const EdgeInsets.only(top: 16.0), // Top padding
           child: Card(
             elevation: 8, // Card shadow
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
+                  // Search bar
                   Row(
                     children: [
                       Expanded(
@@ -90,26 +99,36 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
+                  // Display list of customers
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: filteredCustomers.length,
-                      itemBuilder: (context, index) {
-                        final customer = filteredCustomers[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 8),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              child: Text('${index + 1}'),
-                            ),
-                            title: Text(customer.name),
-                            subtitle:
-                                Text('Contact: ${customer.contactNumber}'),
-                            trailing: Text(
-                                '\$${customer.pendingAmount.toStringAsFixed(2)}'),
-                          ),
-                        );
-                      },
-                    ),
+                    child: filteredCustomers.isNotEmpty
+                        ? ListView.builder(
+                            itemCount: filteredCustomers.length,
+                            itemBuilder: (context, index) {
+                              final customer = filteredCustomers[index];
+                              return Card(
+                                margin: const EdgeInsets.symmetric(vertical: 8),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    child: Text('${index + 1}'),
+                                  ),
+                                  title: Text(customer.name),
+                                  subtitle: Text(
+                                      'Contact: ${customer.contactNumber}'),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                          'Plates: ${customer.platesQuantity}'),
+                                      Text(
+                                          'Pending: \$${customer.pendingAmount.toStringAsFixed(2)}'),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : const Text('No customers found'),
                   ),
                 ],
               ),

@@ -1,5 +1,4 @@
 import 'package:farm_track/screens/Authentications/registration_screen.dart';
-import 'package:farm_track/screens/subscreens/expense_overview_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../databese/database_helper.dart';
