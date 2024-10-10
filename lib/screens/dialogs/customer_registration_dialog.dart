@@ -110,24 +110,18 @@ class CustomerRegistrationDialog extends StatelessWidget {
                 address.isNotEmpty &&
                 contactNumber.isNotEmpty) {
               // Check the internet connection status
-              var connectivityResult =
-                  await (Connectivity().checkConnectivity());
+              // Internet not available, save customer locally to SQLite
+              DatabaseHelper dbHelper = DatabaseHelper();
+              await dbHelper.insertCustomer(
+                  customerName, address, contactNumber, aadharNumber);
 
-              // If the result is either mobile or wifi, it means the user has internet access
+              // Show success message
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text('Customer added offline, saved locally.')),
+              );
 
-              if (connectivityResult == ConnectivityResult.mobile ||
-                  connectivityResult == ConnectivityResult.wifi) {
-                FirestoreHelper firestoreHelper = FirestoreHelper();
-                // Internet is available, execute the Firestore insertion
-                await firestoreHelper.insertCustomer(
-                    customerName, address, contactNumber, aadharNumber);
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Customer Added online ...')),
-                );
-              } else {
-                // Save the customer to the database
-              } // Close the dialog
+              Navigator.pop(context); // Close the dialog after save
             } else {
               // Show a Snackbar for incomplete fields
               ScaffoldMessenger.of(context).showSnackBar(

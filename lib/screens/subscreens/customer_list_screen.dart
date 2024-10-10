@@ -113,8 +113,14 @@ class _CustomerListScreenState extends State<CustomerListScreen> {
                                     child: Text('${index + 1}'),
                                   ),
                                   title: Text(customer.name),
-                                  subtitle: Text(
-                                      'Contact: ${customer.contactNumber}'),
+                                  subtitle: Row(
+                                    children: [
+                                      const Icon(Icons.phone,
+                                          size: 16), // Phone icon
+                                      const SizedBox(width: 4), // Spacing
+                                      Text(customer.contactNumber),
+                                    ],
+                                  ),
                                   trailing: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [

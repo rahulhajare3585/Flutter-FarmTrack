@@ -48,6 +48,10 @@ class _LoginScreenState extends State<LoginScreen>
     String? password = prefs.getString('password');
 
     if (email != null && password != null) {
+      DatabaseHelper dbHelper = DatabaseHelper();
+      var data = dbHelper.getCustomers();
+      print(data);
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => HomeScreen()),
